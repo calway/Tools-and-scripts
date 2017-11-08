@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output method="html"/>
+<xsl:decimal-format name="european" decimal-separator="," grouping-separator="." NaN=""/>
+<xsl:decimal-format name="timevalues" NaN="--"/>
+<xsl:variable name="indentwidth" select="0.5"/>
+
+<xsl:template match="/Report">
+<xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;</xsl:text>
+<html>
+<head>
+<title><xsl:value-of select="Title"/></title>
+<meta http-equiv="X-UA-Compatible" content="IE=10" />
+<meta charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
+</head>
+<body>
+<xsl:apply-templates select="Data"/>
+<div>
+	<table width="100%" >
+	<tr><td>
+	<xsl:value-of select="LicenseInfo/Company"/><br/>
+	<xsl:value-of select="LicenseInfo/Street"/> <xsl:value-of select="LicenseInfo/Number"/><br/>
+	<xsl:value-of select="LicenseInfo/Zip"/><xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text><xsl:value-of select="LicenseInfo/City"/><br/>
+	<xsl:value-of select="LicenseInfo/Country"/>
+	</td>
+	<td>
+	</td>
+	<td style="text-align:right">
+		<xsl:value-of select="SystemInfo/LongDate"/>, <xsl:value-of select="SystemInfo/Time"/><br/>
+		<xsl:value-of select="SystemInfo/UserName/@Label"/>: <xsl:value-of select="SystemInfo/UserName"/><br/>
+		<br/>
+	</td>
+	</tr>
+	</table>
+</div>
+<script>
+$(document).ready(function() {
+    var table = $('#report').DataTable({
+	order: [],
+	dom: '<xsl:text disable-output-escaping="yes">&lt;"top"f&gt;</xsl:text>',
+	ordering: false,
+	paging: false,
+    } );
+} );
+</script>
+</body>
+</html>
+</xsl:template>
+
+
+<xsl:template match="Data">
+<!-- Insert selection criteria overview -->
+<xsl:call-template name='Criteria'/>
+<table id="report" width="100%" class="table table-striped table-bordered table-condensed" cellspacing="0">
+<!-- Insert column headers -->
+<thead>
+	<xsl:call-template name='ColumnHeader'/>
+</thead>
+<!-- Insert data -->
+<tbody>
+	<xsl:apply-templates select="Group"/>
+</tbody>
+</table>
+</xsl:template>
+
+
+<xsl:template match="Data//Group">
+
+<xsl:apply-templates select="Group"/>
+
+<xsl:variable name="CurrGroupID" select="@ID"/>
+<xsl:variable name="Row" select="position()"/>
+
+<xsl:choose>			
+<xsl:when test="count(Group)=0">
+<tr>
+	<!-- Detail level -->
+
+	<!-- Insert groupheaders -->
+	<xsl:for-each select="ancestor-or-self::Group">
+		<xsl:call-template name='DataCell'>
+			<xsl:with-param name="GroupID" select="@ID"/>
+			<xsl:with-param name="Text" select="Value/text()"/>
+			<xsl:with-param name="Row" select="$Row"/>
+		</xsl:call-template>
+	</xsl:for-each>
+	<!-- Insert values -->
+	<xsl:call-template name="ColumnCells">
+		<xsl:with-param name="GroupID" select="$CurrGroupID"/>
+		<xsl:with-param name="Row" select="$Row"/>
+	</xsl:call-template>
+</tr>
+</xsl:when>
+<xsl:otherwise>
+
+<tr>
+	<!-- Any higher group level -->
+
+	<!-- Insert 'Totals' label -->
+	<xsl:for-each select="//Report/Groups/Group">
+		<xsl:variable name="Text">
+			<xsl:choose>
+			<xsl:when test="$CurrGroupID=@ID">Totaal:</xsl:when>
+			<xsl:otherwise></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="GroupID">
+			<xsl:choose>
+			<xsl:when test="$CurrGroupID>@ID"><xsl:value-of select="@ID"/></xsl:when>
+			<xsl:otherwise><xsl:value-of select="$CurrGroupID"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:call-template name='DataCell'>
+			<xsl:with-param name="GroupID" select="$GroupID"/>
+			<xsl:with-param name="Text" select="$Text"/>
+			<xsl:with-param name="Class" select="'success'"/>
+		</xsl:call-template>
+	</xsl:for-each>
+	<!-- Insert values -->
+	<xsl:call-template name="ColumnCells">
+		<xsl:with-param name="GroupID" select="$CurrGroupID"/>
+		<xsl:with-param name="Row" select="$Row"/>
+		<xsl:with-param name="Class" select="'success'"/>
+	</xsl:call-template>
+</tr>
+
+</xsl:otherwise>
+</xsl:choose>
+
+<!--
+Add blank line when: 
+- the just printed values are totals for any deeper groupinglevel.
+- the just printed values are the last within the parent grouplevel.
+-->
+
+<xsl:if test="count(Group)&gt;0 or position()=count(../Group)">
+	<!-- Insert grouping-pagebreak -->
+	<xsl:variable name="Break" select="//Report/Groups/Group[@ID=$CurrGroupID]/@ForcePageBreak"/>
+
+	<xsl:if test="$Break='yes'">
+	<xsl:call-template name='Criteria'>
+		<xsl:with-param name="IsRepeat" select="1"/>
+	</xsl:call-template>
+
+	<xsl:call-template name='ColumnHeader'>
+		<xsl:with-param name="IsRepeat" select="1"/>
+	</xsl:call-template>
+	</xsl:if>
+</xsl:if>
+</xsl:template>
+
+
+<xsl:template name="Criteria">
+	<!-- Insert selection criteria overview -->
+	<xsl:param name="IsRepeat">0</xsl:param>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+         Parameters
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+      <div class="list-group">
+		<xsl:for-each select="//Report/Criteria/Criterion">
+		<li class="list-group-item">
+			<xsl:value-of select="@Label"/>
+			<xsl:value-of select="@Value"/>
+		</li>
+		</xsl:for-each>
+      </div>
+    </div>
+  </div>
+</div>
+</xsl:template>
+
+
+<xsl:template name="ColumnHeader">
+	<!-- Insert column headers -->
+	<xsl:param name="IsRepeat">0</xsl:param>
+
+	<tr>
+	<xsl:if test="$IsRepeat=0">
+	<!-- Group headers for screen layout -->
+	<xsl:for-each select="//Report/Groups/Group">
+		<th>			
+			<xsl:value-of select="@Label"/>
+		</th>
+	</xsl:for-each>
+	</xsl:if>
+
+	<!-- Value headers for all layouts -->
+	<xsl:for-each select="//Report/Columns/Column">
+	<th>
+		<xsl:value-of select="@Label"/>
+		<!--xsl:value-of select="translate(@Label,'/',' ')"/-->
+	</th>
+	</xsl:for-each>
+	</tr>
+
+</xsl:template>
+
+
+<xsl:template name="ColumnCells">
+	<xsl:param name="GroupID"/>
+	<xsl:param name="Row"/>
+	<xsl:param name="Class"/>
+	<xsl:for-each select="Column">
+		<xsl:variable name="CurrColumnID" select="@ID"/>
+		<xsl:variable name="Units" select="//Report/Columns/Column[@ID=$CurrColumnID]/@Units"/>
+		<xsl:variable name="Text">
+		<xsl:choose>
+			<xsl:when test="$Units='seconds'">
+				<xsl:variable name="seconds2" select="text()"/>
+				<xsl:variable name="hours" select="floor($seconds2 div 3600)"/>
+				<xsl:variable name="seconds1" select="$seconds2 - ($hours * 3600)"/>
+				<xsl:variable name="minutes" select="floor($seconds1 div 60)"/>
+				<xsl:variable name="seconds" select="$seconds1 - ($minutes * 60)"/>
+				<xsl:value-of select="format-number($hours,'0','timevalues')"/>:<xsl:value-of select="format-number($minutes,'00','timevalues')"/>:<xsl:value-of select="format-number($seconds,'00','timevalues')"/>
+
+			</xsl:when>
+
+			<xsl:when test="$Units='perhour'"><xsl:value-of select="format-number(text(),'0,00','european')"/>/u</xsl:when>
+
+			<xsl:when test="$Units='percent'"><xsl:value-of select="format-number(text(),'0,00','european')"/>%</xsl:when>
+
+			<xsl:when test="$Units=''"><xsl:value-of select="format-number(text(),'#','european')"/></xsl:when>
+
+		</xsl:choose>
+		</xsl:variable>
+
+		<xsl:call-template name='DataCell'>
+			<xsl:with-param name="GroupID" select="$GroupID"/>
+			<xsl:with-param name="Text" select="$Text"/>
+			<xsl:with-param name="Row" select="$Row"/>
+			<xsl:with-param name="TextAlign" select="'right'"/>
+			<xsl:with-param name="Class" select="$Class"/>
+
+		</xsl:call-template>
+	</xsl:for-each>
+
+</xsl:template>
+
+
+<xsl:template name="DataCell">
+	<xsl:param name="GroupID"/>
+	<xsl:param name="Text"/>
+	<xsl:param name="Row" select="0"/>
+	<xsl:param name="TextAlign" select="'left'"/>
+	<xsl:param name="MarginLeft"/>
+	<xsl:param name="Class"/>
+	<td>
+		<xsl:attribute name="class"><xsl:value-of select="$Class"/></xsl:attribute>
+		<xsl:attribute name="style">text-align: <xsl:value-of select="$TextAlign"/>;</xsl:attribute>
+		<xsl:value-of select="$Text"/>
+	</td>
+</xsl:template>
+
+</xsl:stylesheet>
