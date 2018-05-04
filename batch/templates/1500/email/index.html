@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>Geachte %ENTRY.NAME_GENDER \IF"De heer"?"heer":"mevrouw"% %ENTRY.NAME_MIDDLE \CC0% %ENTRY.NAME_LAST%,</p>
+<p>Dit is een voorbeeld email informatie aanvraag voor scriptid 1500.</p>
+<!-- Om de custom tekst die in het belscript is ingevuld in te voegen gebruik -->
+<p>%SCRIPT.INFO_EMAIL_BODY \SW"","%CAMPAIGN_EMAIL_BODY.VALUE%" \SW"","%SCRIPTDEF_EMAIL_BODY.VALUE%"%</p>
+<br/>
+<p>Vervolgens kan de standaard tekst weer vervolgen die altijd in de email moet worden opgenomen. Uiteraard kan ook de compete email tekst
+op maat worden ingevuld en dan blijft hier alleen de geachte... en Met vriendelijk groet... over.</p>
+
+<p>Met vriendelijke groet,<br/>
+<br/>
+%AGENT.NAME%<<br/>
+Bedrijfsnaam b.v.<br/>
+Straatnaam huisnummer<br/>
+Postcode en plaats<br/>
+Tel. telefoonnummer<br/>
+Email emailadres@domein.nl<br/>
+www <a href="https://www.domein.nl">domein.nl</a></p>
+</body>
+</html>
