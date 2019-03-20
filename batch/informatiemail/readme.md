@@ -39,7 +39,7 @@ Deze worden zowel op campagne, als op scriptdefinitie gezocht waarbij de campagn
 
 veldnaam | type | inhoud
 ---------|------|-------
-NFO | Memo | Dit veld wordt gewoon gemaakt, voor meerdere attachments moet dit een checkbox zijn. Anders een Combobox
+INFO | Memo | Dit veld wordt gewoon gemaakt, voor meerdere attachments moet dit een checkbox zijn. Anders een Combobox
 INFO_EMAIL_BODY | Memo | Dit veld wordt niet afgebeeld, CustomHTML en Vraag zijn leeg  
 EXP_INFO | Karakter(16) | Dit vald kan zowel zichtbaar/readonly als onzichtbaar op de pagina staan. 
 INFO_EMAIL_TO | Karakter(50) | Dit veld wordt gebruikt als TO veld voor de email. Het wordt afgebeeld als Custom HTML en geeft ook alle andere opmaak weer voor template editing. Hier wordt gebruik gemaakt van andere belopdrachte velden die email adressen bevatten om een keuzelijst af te beelden. Verder wordt CKEditor gebruikt om de template te bewerken.
@@ -91,6 +91,7 @@ else if(control.length>=selectedIndex)
 <a class="button" href="javascript:showDialog('DIALOG_INFO_EMAIL_BODY')">Wijzig email bericht</a>
 <a class="button" onclick="setFieldValue('script_info_email_body','');">Standaard tekst</a>
 
+<script src="//cdn.ckeditor.com/4.11.3/basic/ckeditor.js"></script>
 <!-- Begin: Dialog for editing the email template -->
 <div data-role="dialog" data-overlay="true" data-overlay-color="op-dark" data-close-button="true" data-on-dialog-close="dialog_info_body_template_close" id="DIALOG_INFO_EMAIL_BODY">
 <div class="container">
@@ -125,4 +126,5 @@ function dialog_info_body_template_close()
 setFieldValue("script_info_email_body", CKEDITOR.instances['script_info_email_body'].getData());
 }
 </script>
+<!-- End: Dialog for editing the email template -->
 ```
