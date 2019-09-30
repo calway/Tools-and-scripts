@@ -31,7 +31,12 @@ Kies dan de pagina en het formulier die eerder zijn voorbereid en druk wederom o
 ![](images/facebook-instant-form-zapier-step-2-post.png)
 
 Kies hier bij Action Event voor "Custom request" en druk op "Continue".
-![](images/facebook-instant-form-custom-request.png)
+
+![](images/facebook-instant-form-zapier-custom-request.png)
+
+![](images/facebook-instant-form-zapier-custom-request-2.png)
+
+![](images/facebook-instant-form-zapier-custom-request-3.png)
 
 Vul nu de Callpro API instellingen in, w.o. de custom URL waar de CallPro API op geschikbaar is 
 en the apikey (Authorization header).
