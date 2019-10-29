@@ -46,5 +46,5 @@ gebruik worden gemaakt van de Facebook velden die via het Lead formulier zijn on
 
 ![Voorbeeld json bericht](images/facebook-instant-form-zapier-webhook-json-data-example.png)
 
-Belangrijk is dat je juiste `callListID` wordt gebruikt en dat de `scriptFields` array geldige velden uit CallPro bevat.
+Belangrijk is dat de juiste `callListID` wordt gebruikt en dat de `scriptFields` array geldige velden uit CallPro bevat.
 
