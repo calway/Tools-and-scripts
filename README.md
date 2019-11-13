@@ -6,5 +6,5 @@ Handige hulpjes bij beheer, inrichten of gebruik van ....
 
 # Integraties
 
-* [Belopdrachten toevoegen vanuit Facebook Ads](integrations/Facebook+Lead+to+CallPro+using+Zapier+Webhook.md)
-* [Belopdrachten toevoegen vanuit een web formulier](integrations/Microsoft+Form+to+CallPro+using+Microsoft+Flow.md)
+* [Belopdrachten toevoegen vanuit Facebook Ads](integrations/Facebook-Lead-to-CallPro-using-Zapier-Webhook.md)
+* [Belopdrachten toevoegen vanuit een web formulier](integrations/Microsoft-Form-to-CallPro-using-Microsoft-Flow.md)
