@@ -3,7 +3,7 @@ Handige hulpjes bij beheer, inrichten of gebruik van ....
 
 # Belopdracht manipulaties
 * [Heractiveren van belopdrachten die zijn weggeboekt als Te veel belpogingen](guides/Heractiveren-van-belopdrachten-die-zijn-weggeboekt-als-Te-veel-belpogingen.md)
-* [Wijzigen status van belopdrachten](guides/wijzigen-status-van-belopdrachten.md)
+* [Wijzigen status van belopdrachten](guides/Wijzigen-status-van-belopdrachten.md)
 
 
 # Visuele aanpassingen
